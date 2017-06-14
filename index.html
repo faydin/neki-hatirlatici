@@ -1,0 +1,180 @@
+<head>
+    <style>
+        html {
+            width: 350px;
+            height: 100vh;
+            background-color: lightgray;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        div#baslik {
+            font-size: 32;
+            font-family: serif;
+            font-weight: bold;
+            color: teal;
+            border-style: solid;
+            border-width: 10;
+            border-top-width: 10px;
+            border-right-width: 10px;
+            border-bottom-width: 10px;
+            border-left-width: 10px;
+            width: 310;
+        }
+        
+        div#sistem {
+            color: slategray;
+            font-weight: bolder;
+            margin-left: 11;
+        }
+        
+        span {
+            text-shadow: 1px 1px 0.5px rgba(3, 169, 244, 0.83);
+        }
+        
+        label {
+            font-family: serif;
+            font-size: 19;
+        }
+        
+        textarea#hatirla_metin {
+            width: 250;
+            border-radius: 20px;
+            width: 330;
+        }
+        
+        select {
+            margin-left: 10;
+            margin-right: 10;
+        }
+        
+        input#ekle {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 5;
+            background-color: lightskyblue;
+            height: 30;
+        }
+        
+        textarea#kayitlar {
+            height: 300;
+            width: 330;
+            background-color: ghostwhite;
+            border: none;
+            background-color: darkgray;
+        }
+    </style>
+
+    <body>
+        <audio id="zilsesi" src="zil" preload="auto"></audio>
+        <div id="baslik">Neki Hatirlatici v0.1.1<br></div>
+        <div id="sistem">Sistemin saati: <span id="sistem_saat"></span><br>Sistemin tarihi: <span id="sistem_tarih"></span></div>
+        <form><br>
+            <label>Hatirlatilmasini istediginiz sey neki?</label><br>
+            <textarea type="text" id="hatirla_metin"></textarea><br>
+            <label>Hatirlatilmasini istediginiz gun neki?</label><br>
+            <select></select>/
+            <select></select>/
+            <select></select><br>
+            <label>Hatirlatilmasini istediginiz saat neki?</label><br>
+            <select></select>:
+            <select></select>:
+            <select></select><br>
+            <input type="button" id="ekle" value="Hatirlatmayi Ekle"></input><br>
+            <textarea id="kayitlar" style="height: 300; width: 330;"></textarea>
+            <script>
+                var hatirlatmalar = []
+                var hat_sayisi = 0
+
+                function sifir_ekleyici(f) {
+                    return (f < 10) ? "0" + f : f
+                }
+                //Sadece bir kere ayarlaması için bu kısıma aldım
+                var tarih = new Date()
+                var aylar = ["Ocak", "Subat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Agustos", "Eylul", "Ekim", "Kasım", "Aralik"]
+                for (var i = 0; i < 31; i++) {
+                    document.getElementsByTagName("select")[0][i] = new Option(sifir_ekleyici(i + 1), sifir_ekleyici(i + 1), false, tarih.getDate() == i + 1)
+                    if (i < 12)
+                        document.getElementsByTagName("select")[1][i] = new Option(aylar[i], sifir_ekleyici(i + 1), false, tarih.getMonth() == i)
+                    if (i < 11)
+                        document.getElementsByTagName("select")[2][i] = new Option(sifir_ekleyici(2017 + i), sifir_ekleyici(2017 + i), false, tarih.getFullYear() == i)
+
+                }
+                for (var i = 0; i < 60; i++) {
+                    if (i < 24)
+                        document.getElementsByTagName("select")[3][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCHours() + 3 == i)
+                    document.getElementsByTagName("select")[4][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCMinutes() == i)
+                    document.getElementsByTagName("select")[5][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCSeconds() == i)
+
+                }
+
+                function bilgileri_tazele() {
+                    var tarih = new Date()
+                    document.getElementById("sistem_saat").innerHTML = sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds());
+                    document.getElementById("sistem_tarih").innerHTML = sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear());
+                    for (var n = 0; n < hat_sayisi; n++) {
+                        if (hatirlatmalar[n].tarih == sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear()) && hatirlatmalar[n].saat == sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds())) {
+                            document.getElementById('zilsesi').play();
+                            alert("Saat: " + hatirlatmalar[n].saat + "\n" + hatirlatmalar[n].metin)
+                            bilgileri_tazele()
+
+                        }
+                    }
+
+                }
+
+
+                document.getElementById("ekle").onclick = function() {
+                    hatirlatmalar.push({
+                        metin: document.getElementById("hatirla_metin").value,
+                        tarih: document.getElementsByTagName("select")[0].value + "/" + document.getElementsByTagName("select")[1].value + "/" + document.getElementsByTagName("select")[2].value,
+                        saat: document.getElementsByTagName("select")[3].value + ":" + document.getElementsByTagName("select")[4].value + ":" + document.getElementsByTagName("select")[5].value,
+                        kiyas_tarih: document.getElementsByTagName("select")[2].value + document.getElementsByTagName("select")[1].value + document.getElementsByTagName("select")[0].value
+                    })
+
+                    hat_sayisi++
+                    //tarihe göre
+                    for (var m = 0; m < ((hat_sayisi - 1) ** 2); m++) {
+                        var n = m % (hat_sayisi - 1)
+                        if (hatirlatmalar[n].kiyas_tarih > hatirlatmalar[n + 1].kiyas_tarih) {
+                            var temp = hatirlatmalar[n + 1]
+                            hatirlatmalar[n + 1] = hatirlatmalar[n]
+                            hatirlatmalar[n] = temp
+                        }
+                    }
+                    //saate göre
+                    for (var m = 0; m < ((hat_sayisi - 1) ** 2); m++) {
+                        var n = m % (hat_sayisi - 1)
+                        if (hatirlatmalar[n].saat > hatirlatmalar[n + 1].saat) {
+                            var temp = hatirlatmalar[n + 1]
+                            hatirlatmalar[n + 1] = hatirlatmalar[n]
+                            hatirlatmalar[n] = temp
+                        }
+                    }
+
+                    /*
+                                        for (m = 0; m != ((hat_sayisi ^ 2) - hat_sayisi) / 2; m++) {
+                                            m = m % hat_sayisi
+                                            if (hatirlatmalar[m].saat > hatirlatmalar[m + 1].saat) {
+                                                var temp = hatirlatmalar[m + 1]
+                                                hatirlatmalar[m + 1] = hatirlatmalar[m]
+                                                hatirlatmalar[m] = temp
+                                            }
+                                        }
+                    */
+                    document.getElementById("kayitlar").innerHTML = ""
+                    for (var n = 0; n < hat_sayisi; n++) {
+                        document.getElementById("kayitlar").innerHTML += "\n" + (1 * n + 1) + ". hatirlatma: " + hatirlatmalar[n].metin + "\nTarih: " + hatirlatmalar[n].tarih + "\tSaat: " + hatirlatmalar[n].saat + "\n\n"
+                    }
+
+                }
+
+                setInterval(bilgileri_tazele, 1000)
+            </script>
+        </form>
+
+    </body>
+
+</head>
