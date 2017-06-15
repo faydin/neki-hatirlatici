@@ -1,4 +1,7 @@
 <head>
+    <!--Türkçe karakterleri gösterebilmek için-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
     <style>
         html {
             width: 350px;
@@ -42,6 +45,7 @@
             width: 250;
             border-radius: 20px;
             width: 330;
+            padding-left: 15;
         }
         
         select {
@@ -50,7 +54,7 @@
         }
         
         input#ekle {
-            display: block;
+            width: 170;
             margin-left: auto;
             margin-right: auto;
             margin-top: 5;
@@ -59,34 +63,98 @@
         }
         
         textarea#kayitlar {
+            margin-top: 5;
             height: 300;
             width: 330;
             background-color: ghostwhite;
             border: none;
             background-color: darkgray;
+            font-weight: 600;
+            font-size: 14;
+            color: #43484a;
+        }
+        
+        input#sil_no {
+            width: 30;
+            border: dotted;
+            border-width: 2;
+            border-color: dimgray;
+            background-color: transparent;
+            text-align: right;
+        }
+        
+        input#sil {
+            background-color: red;
         }
     </style>
 
     <body>
+        <!--Mobil cihazların ekranına tam oturması için-->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <audio id="zilsesi" src="zil" preload="auto"></audio>
-        <div id="baslik">Neki Hatirlatici v0.1.1<br></div>
+        <div id="baslik">Neki Hatırlatıcı v0.1.2<br></div>
         <div id="sistem">Sistemin saati: <span id="sistem_saat"></span><br>Sistemin tarihi: <span id="sistem_tarih"></span></div>
         <form><br>
-            <label>Hatirlatilmasini istediginiz sey neki?</label><br>
-            <textarea type="text" id="hatirla_metin"></textarea><br>
-            <label>Hatirlatilmasini istediginiz gun neki?</label><br>
+            <label>Hatırlatılmasını istediğiniz sey neki?</label><br>
+            <textarea type="text" id="hatirla_metin" placeholder="Örnek: Windows güncellemesini yükle."></textarea><br>
+            <label>Hatırlatılmasını istediğiniz gun neki?</label><br>
             <select></select>/
             <select></select>/
             <select></select><br>
-            <label>Hatirlatilmasini istediginiz saat neki?</label><br>
+            <label>Hatırlatılmasını istediğiniz saat neki?</label><br>
             <select></select>:
             <select></select>:
             <select></select><br>
-            <input type="button" id="ekle" value="Hatirlatmayi Ekle"></input><br>
-            <textarea id="kayitlar" style="height: 300; width: 330;"></textarea>
+            <input type="button" id="ekle" value="Hatırlatmayı Ekle"></input>
+            <input type="text" id="sil_no" placeholder="num">. hatırlatmayı</input><input type="button" value="sil" id="sil"></input><br>
+            <textarea disabled id="kayitlar" style="height: 300; width: 330;"></textarea>
             <script>
-                var hatirlatmalar = []
-                var hat_sayisi = 0
+                function kiyas_tarih(f) { //tarihi gg/aa/yyyy halinden yyyyaagg haline sokan fonksiyon. karşılaştırmak için
+                    return hatirlatmalar[f].tarih.substring(6, 10) + hatirlatmalar[f].tarih.substring(3, 5) + hatirlatmalar[f].tarih.substring(0, 2);
+                }
+
+                function hafizaya_al() { //Hatırlatmaları JSON kullanmadan(electronda çalışmadığı için) hafızaya alma fonksiyonu
+                    for (var n = 0; n < hatirlatmalar.length; n++) {
+                        localStorage.setItem("hatirlatmametin_" + n, hatirlatmalar[n].metin)
+                        localStorage.setItem("hatirlatmatarih_" + n, hatirlatmalar[n].tarih)
+                        localStorage.setItem("hatirlatmasaat_" + n, hatirlatmalar[n].saat)
+                    }
+                    //Dizinin alt elemanlarını ayrı ayrı hafızalarda tuttum. Buna gerek olmayabilirdi. Sonra bakacağım.
+                }
+
+                function sirala() { //Hatırlatmaların gösterildiği yere hatırlatmaları zamana göre sıralaması için fonksiyon
+                    for (var m = hatirlatmalar.length - 1; m > 0; m--) {
+                        for (var n = 0; n < m; n++) {
+                            if (kiyas_tarih(n) + hatirlatmalar[n].saat > kiyas_tarih(n + 1) + hatirlatmalar[n + 1].saat) {
+                                var temp = hatirlatmalar[n + 1]
+                                hatirlatmalar[n + 1] = hatirlatmalar[n]
+                                hatirlatmalar[n] = temp
+                            }
+                        }
+                    }
+                }
+
+                function guncelle_kayitlar() { //hatılatmaların yazdığı kutuyu diziye göre doldurur
+                    document.getElementById("kayitlar").innerHTML = ""
+                    for (var n = 0; n < hatirlatmalar.length; n++) {
+                        document.getElementById("kayitlar").innerHTML += "\n" + (1 * n + 1) + ". hatırlatma: " + hatirlatmalar[n].metin + "\nTarih: " + hatirlatmalar[n].tarih + "\tSaat: " + hatirlatmalar[n].saat + "\n--------------------------------\n"
+                    }
+                }
+
+                var hatirlatmalar = [] //meşhur dizi
+
+
+                for (var n = 0; localStorage.getItem("hatirlatmasaat_" + n); n++) { //hafızadan diziye çeken döngü, sistem çalışınca 1 kere çalışır
+                    hatirlatmalar.push({
+                        metin: localStorage.getItem("hatirlatmametin_" + n),
+                        tarih: localStorage.getItem("hatirlatmatarih_" + n),
+                        saat: localStorage.getItem("hatirlatmasaat_" + n)
+                    })
+                }
+
+                guncelle_kayitlar() //hafızadan alınan bilgilerle doldurulan diziyi yazı kutuya döker
+
 
                 function sifir_ekleyici(f) {
                     return (f < 10) ? "0" + f : f
@@ -110,11 +178,11 @@
 
                 }
 
-                function bilgileri_tazele() {
+                function bilgileri_tazele() { //her saniye çalışan fonksiyon
                     var tarih = new Date()
                     document.getElementById("sistem_saat").innerHTML = sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds());
                     document.getElementById("sistem_tarih").innerHTML = sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear());
-                    for (var n = 0; n < hat_sayisi; n++) {
+                    for (var n = 0; n < hatirlatmalar.length; n++) {
                         if (hatirlatmalar[n].tarih == sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear()) && hatirlatmalar[n].saat == sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds())) {
                             document.getElementById('zilsesi').play();
                             alert("Saat: " + hatirlatmalar[n].saat + "\n" + hatirlatmalar[n].metin)
@@ -125,51 +193,45 @@
 
                 }
 
+                //silme fonksiyonu
+                document.getElementById("sil").onclick = function() {
+                    if (hatirlatmalar[document.getElementById("sil_no").value - 1]) {
+                        hatirlatmalar[document.getElementById("sil_no").value - 1].saat = "99:99:99"
+                        hatirlatmalar[document.getElementById("sil_no").value - 1].tarih = "99/99/9999"
+                        sirala()
+                        hatirlatmalar.pop()
+                        guncelle_kayitlar()
+                        hafizaya_al()
+                    } else {
+                        alert("Belittiginiz hatirlatma yanlis olmali!")
+                        bilgileri_tazele()
+                    }
+                }
 
+                //ekleme fonksiyonu
                 document.getElementById("ekle").onclick = function() {
+                    function kiyas_tarih(f) {
+                        return hatirlatmalar[f].tarih.substring(6, 10) + hatirlatmalar[f].tarih.substring(3, 5) + hatirlatmalar[f].tarih.substring(0, 2);
+                    }
+
                     hatirlatmalar.push({
                         metin: document.getElementById("hatirla_metin").value,
                         tarih: document.getElementsByTagName("select")[0].value + "/" + document.getElementsByTagName("select")[1].value + "/" + document.getElementsByTagName("select")[2].value,
                         saat: document.getElementsByTagName("select")[3].value + ":" + document.getElementsByTagName("select")[4].value + ":" + document.getElementsByTagName("select")[5].value,
-                        kiyas_tarih: document.getElementsByTagName("select")[2].value + document.getElementsByTagName("select")[1].value + document.getElementsByTagName("select")[0].value
                     })
 
-                    hat_sayisi++
-                    //tarihe göre
-                    for (var m = 0; m < ((hat_sayisi - 1) ** 2); m++) {
-                        var n = m % (hat_sayisi - 1)
-                        if (hatirlatmalar[n].kiyas_tarih > hatirlatmalar[n + 1].kiyas_tarih) {
-                            var temp = hatirlatmalar[n + 1]
-                            hatirlatmalar[n + 1] = hatirlatmalar[n]
-                            hatirlatmalar[n] = temp
-                        }
-                    }
-                    //saate göre
-                    for (var m = 0; m < ((hat_sayisi - 1) ** 2); m++) {
-                        var n = m % (hat_sayisi - 1)
-                        if (hatirlatmalar[n].saat > hatirlatmalar[n + 1].saat) {
-                            var temp = hatirlatmalar[n + 1]
-                            hatirlatmalar[n + 1] = hatirlatmalar[n]
-                            hatirlatmalar[n] = temp
-                        }
-                    }
 
-                    /*
-                                        for (m = 0; m != ((hat_sayisi ^ 2) - hat_sayisi) / 2; m++) {
-                                            m = m % hat_sayisi
-                                            if (hatirlatmalar[m].saat > hatirlatmalar[m + 1].saat) {
-                                                var temp = hatirlatmalar[m + 1]
-                                                hatirlatmalar[m + 1] = hatirlatmalar[m]
-                                                hatirlatmalar[m] = temp
-                                            }
-                                        }
-                    */
-                    document.getElementById("kayitlar").innerHTML = ""
-                    for (var n = 0; n < hat_sayisi; n++) {
-                        document.getElementById("kayitlar").innerHTML += "\n" + (1 * n + 1) + ". hatirlatma: " + hatirlatmalar[n].metin + "\nTarih: " + hatirlatmalar[n].tarih + "\tSaat: " + hatirlatmalar[n].saat + "\n\n"
-                    }
+                    sirala()
+
+
+                    hafizaya_al()
+                    guncelle_kayitlar()
+
 
                 }
+
+
+
 
                 setInterval(bilgileri_tazele, 1000)
             </script>
