@@ -115,6 +115,7 @@
                 }
 
                 function hafizaya_al() { //Hatırlatmaları JSON kullanmadan(electronda çalışmadığı için) hafızaya alma fonksiyonu
+                    localStorage.clear()
                     for (var n = 0; n < hatirlatmalar.length; n++) {
                         localStorage.setItem("hatirlatmametin_" + n, hatirlatmalar[n].metin)
                         localStorage.setItem("hatirlatmatarih_" + n, hatirlatmalar[n].tarih)
@@ -146,6 +147,7 @@
 
 
                 for (var n = 0; localStorage.getItem("hatirlatmasaat_" + n); n++) { //hafızadan diziye çeken döngü, sistem çalışınca 1 kere çalışır
+
                     hatirlatmalar.push({
                         metin: localStorage.getItem("hatirlatmametin_" + n),
                         tarih: localStorage.getItem("hatirlatmatarih_" + n),
@@ -172,22 +174,21 @@
                 }
                 for (var i = 0; i < 60; i++) {
                     if (i < 24)
-                        document.getElementsByTagName("select")[3][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCHours() + 3 == i)
-                    document.getElementsByTagName("select")[4][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCMinutes() == i)
-                    document.getElementsByTagName("select")[5][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getUTCSeconds() == i)
+                        document.getElementsByTagName("select")[3][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getHours() == i)
+                    document.getElementsByTagName("select")[4][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getMinutes() == i)
+                    document.getElementsByTagName("select")[5][i] = new Option(sifir_ekleyici(i), sifir_ekleyici(i), false, tarih.getSeconds() == i)
 
                 }
 
                 function bilgileri_tazele() { //her saniye çalışan fonksiyon
                     var tarih = new Date()
-                    document.getElementById("sistem_saat").innerHTML = sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds());
+                    document.getElementById("sistem_saat").innerHTML = sifir_ekleyici(tarih.getHours()) + ":" + sifir_ekleyici(tarih.getMinutes()) + ":" + sifir_ekleyici(tarih.getSeconds());
                     document.getElementById("sistem_tarih").innerHTML = sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear());
                     for (var n = 0; n < hatirlatmalar.length; n++) {
-                        if (hatirlatmalar[n].tarih == sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear()) && hatirlatmalar[n].saat == sifir_ekleyici(tarih.getUTCHours() + 3) + ":" + sifir_ekleyici(tarih.getUTCMinutes()) + ":" + sifir_ekleyici(tarih.getUTCSeconds())) {
+                        if (hatirlatmalar[n].tarih == sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear()) && hatirlatmalar[n].saat == sifir_ekleyici(tarih.getHours()) + ":" + sifir_ekleyici(tarih.getMinutes()) + ":" + sifir_ekleyici(tarih.getSeconds())) {
                             document.getElementById('zilsesi').play();
                             alert("Saat: " + hatirlatmalar[n].saat + "\n" + hatirlatmalar[n].metin)
                             bilgileri_tazele()
-
                         }
                     }
 
@@ -203,7 +204,7 @@
                         guncelle_kayitlar()
                         hafizaya_al()
                     } else {
-                        alert("Belittiginiz hatirlatma yanlis olmali!")
+                        alert("Belirttiğiniz hatırlatma bulunmamaktadır!")
                         bilgileri_tazele()
                     }
                 }
