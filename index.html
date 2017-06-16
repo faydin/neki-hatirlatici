@@ -137,10 +137,17 @@
                 }
 
                 function guncelle_kayitlar() { //hatılatmaların yazdığı kutuyu diziye göre doldurur
-                    document.getElementById("kayitlar").innerHTML = ""
-                    for (var n = 0; n < hatirlatmalar.length; n++) {
-                        document.getElementById("kayitlar").innerHTML += "\n" + (1 * n + 1) + ". hatırlatma: " + hatirlatmalar[n].metin + "\nTarih: " + hatirlatmalar[n].tarih + "\tSaat: " + hatirlatmalar[n].saat + "\n--------------------------------\n"
+
+                    if (hatirlatmalar.length == 0) {
+                        document.getElementById("kayitlar").innerHTML = "Ohhh, kafa rahat...\nHiç hatırlatma yok şu an."
+                    } else {
+                        document.getElementById("kayitlar").innerHTML = ""
+                        for (var n = 0; n < hatirlatmalar.length; n++) {
+                            document.getElementById("kayitlar").innerHTML += "\n" + (1 * n + 1) + ". hatırlatma: " + hatirlatmalar[n].metin + "\nTarih: " + hatirlatmalar[n].tarih + "\tSaat: " + hatirlatmalar[n].saat + "\n--------------------------------\n"
+                        }
                     }
+
+
                 }
 
                 var hatirlatmalar = [] //meşhur dizi
@@ -182,13 +189,14 @@
 
                 function bilgileri_tazele() { //her saniye çalışan fonksiyon
                     var tarih = new Date()
+                        //programın saati ve tarihini doldur
                     document.getElementById("sistem_saat").innerHTML = sifir_ekleyici(tarih.getHours()) + ":" + sifir_ekleyici(tarih.getMinutes()) + ":" + sifir_ekleyici(tarih.getSeconds());
                     document.getElementById("sistem_tarih").innerHTML = sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear());
+                    //alarm kontrolü
                     for (var n = 0; n < hatirlatmalar.length; n++) {
                         if (hatirlatmalar[n].tarih == sifir_ekleyici(tarih.getDate()) + "/" + sifir_ekleyici(tarih.getMonth() + 1) + "/" + sifir_ekleyici(tarih.getFullYear()) && hatirlatmalar[n].saat == sifir_ekleyici(tarih.getHours()) + ":" + sifir_ekleyici(tarih.getMinutes()) + ":" + sifir_ekleyici(tarih.getSeconds())) {
                             document.getElementById('zilsesi').play();
                             alert("Saat: " + hatirlatmalar[n].saat + "\n" + hatirlatmalar[n].metin)
-                            bilgileri_tazele()
                         }
                     }
 
@@ -205,7 +213,6 @@
                         hafizaya_al()
                     } else {
                         alert("Belirttiğiniz hatırlatma bulunmamaktadır!")
-                        bilgileri_tazele()
                     }
                 }
 
