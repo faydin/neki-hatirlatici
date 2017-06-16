@@ -17,13 +17,14 @@
             font-family: serif;
             font-weight: bold;
             color: teal;
-            border-style: solid;
+            border-style: double;
             border-width: 10;
             border-top-width: 10px;
             border-right-width: 10px;
             border-bottom-width: 10px;
             border-left-width: 10px;
             width: 310;
+            text-align: center
         }
         
         div#sistem {
@@ -51,6 +52,13 @@
         select {
             margin-left: 10;
             margin-right: 10;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            text-indent: 1px;
+            border: none;
+            background-color: darkgrey;
+            width: 82;
+            text-align-last: center;
         }
         
         input#ekle {
@@ -60,6 +68,7 @@
             margin-top: 5;
             background-color: lightskyblue;
             height: 30;
+            border: none
         }
         
         textarea#kayitlar {
@@ -81,11 +90,19 @@
             border-color: dimgray;
             background-color: transparent;
             text-align: right;
+            height: 30;
         }
         
         input#sil {
             background-color: red;
+            border: none;
+            height: 30;
+            width: 41px;
         }
+        
+        div#tarih_secim_alani {}
+        
+        div#saat_secim_alani {}
     </style>
 
     <body>
@@ -93,19 +110,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <audio id="zilsesi" src="zil" preload="auto"></audio>
-        <div id="baslik">Neki Hatırlatıcı v0.1.2<br></div>
+        <div id="baslik">Neki Hatırlatıcı<br></div>
         <div id="sistem">Sistemin saati: <span id="sistem_saat"></span><br>Sistemin tarihi: <span id="sistem_tarih"></span></div>
         <form><br>
             <label>Hatırlatılmasını istediğiniz sey neki?</label><br>
             <textarea type="text" id="hatirla_metin" placeholder="Örnek: Windows güncellemesini yükle."></textarea><br>
             <label>Hatırlatılmasını istediğiniz gun neki?</label><br>
-            <select></select>/
-            <select></select>/
-            <select></select><br>
+            <div id=tarih_secim_alani> <select></select>/
+                <select></select>/
+                <select></select></div>
             <label>Hatırlatılmasını istediğiniz saat neki?</label><br>
-            <select></select>:
-            <select></select>:
-            <select></select><br>
+            <div id=saat_secim_alani><select></select>:
+                <select></select>:
+                <select></select></div>
             <input type="button" id="ekle" value="Hatırlatmayı Ekle"></input>
             <input type="text" id="sil_no" placeholder="num">. hatırlatmayı</input><input type="button" value="sil" id="sil"></input><br>
             <textarea disabled id="kayitlar" style="height: 300; width: 330;"></textarea>
